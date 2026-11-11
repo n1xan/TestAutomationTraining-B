@@ -33,11 +33,11 @@ public class NewRequestPage {
     private static final By EMAIL_METHOD = By.xpath("//li[@data-value='EMAIL']");
     private static final By EMAIL_FIELD = By.xpath("//*[@name='email']");
     private static final By PHONE_FIELD = By.xpath("//*[@name='phone']");
-    private static final By NEXT_BUTTON = By.xpath("//*[@data-testid='cs-new-request-wizard-next']");
+//    private static final By NEXT_BUTTON = By.xpath("//*[@data-testid='cs-new-request-wizard-next']");
 
     // Step 4
     private static final By TERMS_BUTTON = By.xpath("//*[@data-testid='cs-new-request-agree-terms']");
-    private static final By NEXT_BUTTON = By.xpath("//*[@data-testid='cs-new-request-wizard-next']");
+//    private static final By NEXT_BUTTON = By.xpath("//*[@data-testid='cs-new-request-wizard-next']");
 
     // Step 5
     private static final By SUBMIT_REQUEST = By.xpath("//*[@data-testid='cs-new-request-wizard-submit']");
@@ -111,10 +111,6 @@ public class NewRequestPage {
         return this;
     }
 
-    public NewRequestPage clickEmergency() {
-        click(EMERGENCY_BUTTON);
-        return this;
-    }
 
     public boolean isRequestErrorMessageDisplayed() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(REQUEST_ERROR_MESSAGE)).isDisplayed();

@@ -5,10 +5,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
+
 public abstract class FormPage<TForm> {
     protected WebDriverWait wait;
     protected WebDriver driver;
 
+    protected FormPage(WebDriver driver, WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
 
     protected static final By NEXT_BUTTON = By.xpath("//*[@data-testid='cs-new-request-wizard-next']");
     protected static final By CANCEL_BUTTON = By.xpath("//*[@data-testid='cs-new-request-wizard-cancel']");
