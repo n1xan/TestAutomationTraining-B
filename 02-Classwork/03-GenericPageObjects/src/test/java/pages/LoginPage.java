@@ -1,0 +1,58 @@
+package pages;
+
+import data.LoginFromData;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class LoginPage extends FormPage<LoginFromData> {
+    // The data-testid is on the MUI wrapper, the real <input> is inside it.
+    private static final By EMAIL = By.cssSelector("[data-testid='cs-login-email'] input");
+    private static final By PASSWORD = By.cssSelector("[data-testid='cs-login-password'] input");
+    private static final By LOGIN_BUTTON = By.cssSelector("[data-testid='cs-login-submit']");
+    private static final By ERROR_MESSAGE = By.cssSelector("[data-testid='cs-login-error']");
+
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+    private final String url;
+
+    public LoginPage(WebDriver driver, WebDriverWait wait, String baseUrl) {
+        this.driver = driver;
+        this.wait = wait;
+        this.url = baseUrl + "/login";
+    }
+
+    public LoginPage open() {
+        driver.get(url);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(LOGIN_BUTTON));
+        return this;
+    }
+
+    public void login(String email, String password) {
+        driver.findElement(EMAIL).sendKeys(email);
+        driver.findElement(PASSWORD).sendKeys(password);
+        driver.findElement(LOGIN_BUTTON).click();
+    }
+
+    public String getErrorMessage() {
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(ERROR_MESSAGE));
+        return error.getText();
+    }
+
+    public boolean isLoginButtonDisplayed() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(LOGIN_BUTTON)).isDisplayed();
+    }
+
+    @Override
+    public void fillForm(LoginFromData formData) {
+        driver.findElement(EMAIL).sendKeys(formData.email());
+        driver.findElement(PASSWORD).sendKeys(formData.password());
+    }
+
+    @Override
+    public void submitForm() {
+        driver.findElement(LOGIN_BUTTON).click();
+    }
+}

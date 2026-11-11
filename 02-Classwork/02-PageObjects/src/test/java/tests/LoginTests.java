@@ -1,0 +1,43 @@
+package tests;
+
+import base.BaseTest;
+import components.Header;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import pages.LoginPage;
+
+public class LoginTests extends BaseTest {
+    private static final String CITIZEN_EMAIL = "john@example.com";
+    private static final String PASSWORD = "password123";
+
+    private LoginPage loginPage;
+    private Header header;
+
+    @BeforeEach
+    void openLoginPage() {
+        loginPage = new LoginPage(driver, wait, BASE_URL).open();
+        header = new Header(driver, wait);
+    }
+
+    @Test
+    void citizenLogsInSuccessfully() {
+        loginPage.login(CITIZEN_EMAIL, PASSWORD);
+
+        wait.until(ExpectedConditions.urlContains("/dashboard"));
+        Assertions.assertTrue(header.isDisplayed(), "Header is not displayed after login");
+        Assertions.assertEquals("CITIZEN", header.getUserRole(), "Wrong role in the user menu");
+
+        header.logout();
+        Assertions.assertTrue(loginPage.isLoginButtonDisplayed(), "Login page is not shown after logout");
+    }
+
+    @Test
+    void wrongPasswordShowsError() {
+        loginPage.login(CITIZEN_EMAIL, "wrongPassword");
+
+        Assertions.assertFalse(loginPage.getErrorMessage().isBlank(), "Error message is empty");
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "User left the login page");
+    }
+}
