@@ -38,7 +38,7 @@ public class NewRequestTests extends BaseTest {
         newRequestContactInformationPage = new NewRequestContactInformationPage(driver, wait);
         newRequestReviewAndSubmitPage = new NewRequestReviewAndSubmitPage(driver, wait);
 
-        myRequestsPage = new MyRequestsPage(driver);
+        myRequestsPage = new MyRequestsPage(driver, wait);
 
         loginPage.login(EMAIL, PASSWORD);
     }

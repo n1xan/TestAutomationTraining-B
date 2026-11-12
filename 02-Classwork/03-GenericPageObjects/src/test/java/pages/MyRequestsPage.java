@@ -1,11 +1,11 @@
 package pages;
 
+import base.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class MyRequestsPage {
-
-    private final WebDriver driver;
+public class MyRequestsPage extends BasePage {
 
     private static final By FIRST_ROW_TITLE = By.xpath("(//*[@data-field='title'])[2]");
     private static final By FIRST_ROW_PRIORITY = By.xpath("(//*[@data-field='priority'])[2]");
@@ -23,7 +23,7 @@ public class MyRequestsPage {
         return driver.findElement(FIRST_ROW_STATUS).getText();
     }
 
-    public MyRequestsPage(WebDriver driver) {
-        this.driver = driver;
+    public MyRequestsPage(WebDriver driver, WebDriverWait wait) {
+        super(driver, wait);
     }
 }
