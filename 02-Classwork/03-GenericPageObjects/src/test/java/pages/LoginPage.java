@@ -22,7 +22,7 @@ public class LoginPage extends FormPage<LoginFromData> {
     }
 
     public LoginPage open() {
-        driver.get(url);
+        this.driver.get(url);
         wait.until(ExpectedConditions.visibilityOfElementLocated(LOGIN_BUTTON));
         return this;
     }

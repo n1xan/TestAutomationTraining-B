@@ -7,8 +7,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public abstract class FormPage<TForm> extends BasePage {
-    protected WebDriverWait wait;
-    protected WebDriver driver;
 
     protected FormPage(WebDriver driver, WebDriverWait wait) {
         super(driver, wait);

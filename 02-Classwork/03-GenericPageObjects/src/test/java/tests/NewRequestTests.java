@@ -29,7 +29,6 @@ public class NewRequestTests extends BaseTest {
 
     @BeforeEach
     void setupTest() {
-
         loginPage = new LoginPage(driver, wait, BASE_URL).open();
         header = new Header(driver, wait);
         newRequestBasicInfoPage = new NewRequestBasicInfoPage(driver, wait);
@@ -97,5 +96,11 @@ public class NewRequestTests extends BaseTest {
         Assertions.assertAll(() -> Assertions.assertEquals(basicInfo.title(), myRequestsPage.getLatestRequestTitle(), "Latest request title is incorrect."),
                 () -> Assertions.assertEquals("Submitted", myRequestsPage.getLatestRequestStatus(), "Status is incorrect."),
                 () -> Assertions.assertEquals(basicInfo.priority(), myRequestsPage.getLatestRequestPriority(), "Priority is incorrect."));
+    }
+
+    @Test
+    public void loginTest() {
+        header.openMyRequests();
+        myRequestsPage.takeScreenshot();
     }
 }

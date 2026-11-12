@@ -16,7 +16,7 @@ public abstract class BaseTest {
     protected WebDriverWait wait;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         ChromeOptions options = new ChromeOptions();
 //        options.addArguments("--headless");
 

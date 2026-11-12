@@ -25,7 +25,7 @@ public abstract class BasePage {
 
     protected void click(By locator) { wait.until(ExpectedConditions.elementToBeClickable(locator)).click(); }
 
-    protected void takeScreenshot() {
+    public void takeScreenshot() {
         File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
         Path destFile = Path.of("target", "screenshots", "home.png");
