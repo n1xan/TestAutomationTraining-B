@@ -1,4 +1,4 @@
 package data;
 
-public record AdditionalDetailsFromData() {
+public record AdditionalDetailsFromData(Boolean shouldAcceptTerms) {
 }

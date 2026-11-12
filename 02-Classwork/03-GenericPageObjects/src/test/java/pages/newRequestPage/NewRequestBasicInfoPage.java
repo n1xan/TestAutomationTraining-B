@@ -54,7 +54,7 @@ public class NewRequestBasicInfoPage extends FormPage<BasicInfoFromData> {
 
     public NewRequestBasicInfoPage selectPriority(String priority) {
         driver.findElement(By.xpath("//div[@data-testid='cs-new-request-priority']//label[.//input[@value='"
-                + priority + "']]")).click();
+                + priority.toUpperCase() + "']]")).click();
         return this;
     }
 

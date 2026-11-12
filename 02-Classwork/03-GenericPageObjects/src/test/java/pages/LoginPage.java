@@ -14,13 +14,10 @@ public class LoginPage extends FormPage<LoginFromData> {
     private static final By LOGIN_BUTTON = By.cssSelector("[data-testid='cs-login-submit']");
     private static final By ERROR_MESSAGE = By.cssSelector("[data-testid='cs-login-error']");
 
-    private final WebDriver driver;
-    private final WebDriverWait wait;
     private final String url;
 
     public LoginPage(WebDriver driver, WebDriverWait wait, String baseUrl) {
-        this.driver = driver;
-        this.wait = wait;
+        super(driver, wait);
         this.url = baseUrl + "/login";
     }
 

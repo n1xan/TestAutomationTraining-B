@@ -1,4 +1,4 @@
 package data;
 
-public record ContactInformationFromData() {
+public record ContactInformationFromData(String contactMethod, String email, String phone, String alternativePhone) {
 }
