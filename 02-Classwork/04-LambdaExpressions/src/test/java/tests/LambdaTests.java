@@ -1,136 +1,108 @@
 package tests;
 
 import base.BaseTest;
-import components.Header;
-import components.MyRequestGrid;
-import data.LoginFromData;
 import data.RequestRow;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pages.LoginPage;
-import pages.MyRequestsPage;
+import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static data.RequestRow.IS_OPEN;
-import static data.RequestRow.IS_URGENT;
+import java.util.function.Supplier;
 
 public class LambdaTests extends BaseTest {
-    private static final String EMAIL = "john@example.com";
-    private static final String PASSWORD = "password123";
-    private static final By MY_REQUESTS_LINK = By.cssSelector("[data-testid='cs-nav-my-requests']");
 
-    private Header header;
-    private MyRequestsPage myRequestsPage;
-    private MyRequestGrid grid;
-
-    @BeforeEach
-    void login() {
-        LoginPage loginPage = new LoginPage(driver, wait, BASE_URL).open();
-        header = new Header(driver, wait);
-        myRequestsPage = new MyRequestsPage(driver, wait);
-        grid = myRequestsPage.grid();
-
-        loginPage.fillForm(new LoginFromData(EMAIL, PASSWORD));
-        loginPage.submitForm();
-
-        // Was: wait.until(ExpectedConditions.urlContains("/dashboard"));
-        wait.until(d -> d.getCurrentUrl().contains("/dashboard"));
+    @Test
+    void consumerTest() {
+        Consumer<WebDriver> openGoogle = browser -> browser.get("https://google.com");
+        openGoogle.accept(driver);
     }
 
-    // Exercise 1: replace an ExpectedConditions wait with a lambda.
-    // Returning null or false keeps the wait polling.
     @Test
-    void waitWithLambda() {
-        // Was: wait.until(ExpectedConditions.elementToBeClickable(MY_REQUESTS_LINK)).click();
-        WebElement link = wait.until(d -> {
-            WebElement element = d.findElement(MY_REQUESTS_LINK);
-            return element.isDisplayed() && element.isEnabled() ? element : null;
-        });
-        link.click();
-
-        // Was: wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(GRID_ROWS, 0));
-        Boolean gridHasRows = wait.until(d -> d.findElements(By.cssSelector(".MuiDataGrid-row")).size() > 0);
-
-        // Grid.getRowElements() uses the same idea: empty list -> null -> keep waiting.
-        Assertions.assertAll(
-                () -> Assertions.assertTrue(gridHasRows),
-                () -> Assertions.assertFalse(grid.getRowElements().isEmpty(), "The grid has no rows"));
+    void supplierTest() {
+        // Supplier – get(): creates a value on demand, no input
+        Supplier<WebDriver> driverSupplier = () -> new ChromeDriver();
+        WebDriver driver = driverSupplier.get();
     }
 
-    // Exercise 2: Predicate<RequestRow> isUrgent / isOpen combined with and() and negate().
     @Test
-    void filterRowsWithPredicates() {
-        header.openMyRequests();
-        List<RequestRow> rows = grid.getRows();
+    void lambdaTest() {
+        List<String> cities = new ArrayList<>();
+        cities.add("Berlin");
+        cities.add("London");
+        cities.add("Paris");
+        cities.add("Kiev");
 
-        Predicate<RequestRow> urgentAndOpen = IS_URGENT.and(IS_OPEN);
-        Predicate<RequestRow> notUrgent = IS_URGENT.negate();
-        Predicate<RequestRow> finished = IS_OPEN.negate();
-
-        List<RequestRow> urgentOpenRows = grid.getRows(urgentAndOpen);
-        List<RequestRow> notUrgentRows = rows.stream().filter(notUrgent).toList();
-        List<RequestRow> finishedRows = rows.stream().filter(finished).toList();
-
-        System.out.println("Urgent & open: " + urgentOpenRows);
-        System.out.println("Not urgent:    " + notUrgentRows);
-        System.out.println("Finished:      " + finishedRows);
-
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(urgentOpenRows, grid.getUrgentOpenRequests()),
-                () -> Assertions.assertTrue(urgentOpenRows.stream().allMatch(IS_URGENT), "Non-urgent row in urgent list"),
-                () -> Assertions.assertTrue(urgentOpenRows.stream().allMatch(IS_OPEN), "Finished row in open list"),
-                () -> Assertions.assertTrue(notUrgentRows.stream().noneMatch(IS_URGENT), "Urgent row in non-urgent list"),
-                () -> Assertions.assertEquals(rows.size(),
-                        rows.stream().filter(IS_OPEN).count() + finishedRows.size(),
-                        "isOpen and isOpen.negate() should split the rows in two"));
+        Runnable printToConsole = () -> System.out.print("Parameterless lambda expression");
+        printToConsole.run();
     }
 
-    // Exercise 3: map grid rows with Function<WebElement, RequestRow>, print with Consumer<RequestRow>, use andThen().
     @Test
-    void mapAndPrintRowsWithFunctionAndConsumer() {
-        header.openMyRequests();
-        List<WebElement> rowElements = grid.getRowElements();
+    void expectedConditionsTest() {
+        driver.get("https://google.com");
+        wait.until((browser) -> Objects.equals(browser.getTitle(), "Google"));
+//        wait.until((browser) -> browser.findElements(By.xpath("spinnerLocator|spinnerLocator|spinnerLocator")).isEmpty());
+    }
 
-        Function<WebElement, RequestRow> toRow = grid.rowMapper();
-        // Function.andThen: WebElement -> RequestRow -> String
-        Function<WebElement, String> toSummary = toRow.andThen(
-                r -> "%s [%s / %s]".formatted(r.title(), r.priority(), r.status()));
+    // Write Predicate<RequestRow> isUrgent and isOpen
+    // (not Resolved, Closed, Rejected). Combine them with and() and negate()
+    @Test
+    void predicateTest() {
+        List<RequestRow> rows = List.of(
+                new RequestRow("Laptop not booting", "High", "Open"),
+                new RequestRow("Need new mouse", "Low", "Open"),
+                new RequestRow("Server is down", "Critical", "In Progress"),
+                new RequestRow("VPN access", "Medium", "Resolved"),
+                new RequestRow("Printer jam", "High", "Closed"));
 
-        Consumer<RequestRow> print = r -> System.out.println("Row: " + r);
-        Consumer<RequestRow> warnIfUrgent = r -> {
-            if (IS_URGENT.and(IS_OPEN).test(r)) {
-                System.out.println("   ^ URGENT and still open!");
-            }
+        Predicate<RequestRow> isUrgent = (r) -> r.priority().equals("High") || r.priority().equals("Critical");
+        Predicate<RequestRow> isOpen = (r) -> r.status().equals("Open");
+
+        rows.forEach(a -> System.out.println(isUrgent.or(isOpen).test(a) ? "Request is Urgent and Open" : "Request is not Urgent and Open"));
+
+//        rows.forEach(isUrgent::test);
+
+//        for (RequestRow requestRow : rows) {
+//            if (isUrgent.test(requestRow)) {
+//                System.out.println("Request is Urgent");
+//            } else {
+//                System.out.println("Request is not Urgent");
+//            }
+//        }
+    }
+
+    @Test
+    @Disabled("Expected to fail - pseudo code")
+    void functionTest() {
+        List<RequestRow> rows = List.of(
+                new RequestRow("Laptop not booting", "High", "Open"),
+                new RequestRow("Need new mouse", "Low", "Open"),
+                new RequestRow("Server is down", "Critical", "In Progress"),
+                new RequestRow("VPN access", "Medium", "Resolved"),
+                new RequestRow("Printer jam", "High", "Closed"));
+
+        // table tr
+        WebElement gridWrapper = driver.findElement(By.name("gridRowLocator"));
+
+        // table > tr > td[] td[] td
+        //              td td td
+        //              td td td
+        Function<WebElement, RequestRow> castRowToModel = (element) -> {
+            var tableCells = element.findElements(By.tagName("td"));
+            var title = tableCells.get(0).getText();
+            var priority = tableCells.get(1).getText();
+            var status = tableCells.get(2).getText();
+
+            return new RequestRow(title, priority, status);
         };
-        // Consumer.andThen: run both consumers for each row, in order
-        Consumer<RequestRow> printAndWarn = print.andThen(warnIfUrgent);
 
-        List<RequestRow> rows = rowElements.stream().map(toRow).toList();
-        rows.forEach(printAndWarn);
-        rowElements.stream().map(toSummary).forEach(System.out::println);
-
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(rowElements.size(), rows.size()),
-                () -> Assertions.assertEquals(myRequestsPage.getLatestRequestTitle(), rows.get(0).title()),
-                () -> Assertions.assertTrue(rows.stream().noneMatch(r -> r.title().isBlank()), "A row has an empty title"));
-    }
-
-    // Generic grid: the record field names must match the grid column headers.
-    @Test
-    void gridHeadersMatchRecordFields() {
-        header.openMyRequests();
-
-        System.out.println("Grid headers:  " + grid.getHeaders());
-        System.out.println("Record fields: " + grid.getFieldNames());
-
-        Assertions.assertDoesNotThrow(grid::verifyHeaders);
-        Assertions.assertTrue(grid.getHeaders().containsAll(grid.getFieldNames()));
+        RequestRow gridModel = castRowToModel.apply(gridWrapper);
     }
 }

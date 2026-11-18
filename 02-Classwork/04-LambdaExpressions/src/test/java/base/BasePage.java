@@ -4,6 +4,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pages.LoginPage;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,13 +15,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+//import static pages.LoginPage.LOGIN_BUTTON;
+
 public abstract class BasePage {
     protected WebDriverWait wait;
     protected WebDriver driver;
+    private String url;
 
     protected BasePage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
         this.wait = wait;
+    }
+
+    public BasePage open() {
+        this.driver.get(url);
+        waitForPageReady();
+        return this;
+    }
+
+    public void waitForPageReady() {
+        wait.until((browser) -> browser.findElements(By.xpath("spinnerLocator|spinnerLocator|spinnerLocator")).isEmpty());
     }
 
     public static void userWait(int millis) {
