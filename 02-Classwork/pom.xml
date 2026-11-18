@@ -12,6 +12,7 @@
         <module>01-FirstTests</module>
         <module>02-PageObjects</module>
         <module>03-GenericPageObjects</module>
+        <module>04-LambdaExpressions</module>
     </modules>
 
     <properties>
