@@ -15,21 +15,21 @@ public abstract class BaseTest {
     protected WebDriver driver;
     protected WebDriverWait wait;
 
-    @BeforeEach
-    public void setUp() {
-        ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless");
-
-        // Wide enough for the desktop header (narrow windows show the mobile drawer instead).
-        options.addArguments("--window-size=1400,900");
-        driver = new ChromeDriver(options);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    }
-
-    @AfterEach
-    void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
+//    @BeforeEach
+//    public void setUp() {
+//        ChromeOptions options = new ChromeOptions();
+////        options.addArguments("--headless");
+//
+//        // Wide enough for the desktop header (narrow windows show the mobile drawer instead).
+//        options.addArguments("--window-size=1400,900");
+//        driver = new ChromeDriver(options);
+//        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+//    }
+//
+//    @AfterEach
+//    void tearDown() {
+//        if (driver != null) {
+//            driver.quit();
+//        }
+//    }
 }
